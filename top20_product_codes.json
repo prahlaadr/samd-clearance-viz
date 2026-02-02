@@ -1,0 +1,22 @@
+[
+	{"productcode":"QIH","device_count":75,"avg_days_to_clearance":156,"min_days":22,"max_days":273},
+	{"productcode":"QAS","device_count":14,"avg_days_to_clearance":91,"min_days":18,"max_days":192},
+	{"productcode":"MYN","device_count":14,"avg_days_to_clearance":207,"min_days":103,"max_days":282},
+	{"productcode":"LLZ","device_count":13,"avg_days_to_clearance":149,"min_days":22,"max_days":271},
+	{"productcode":"QKB","device_count":6,"avg_days_to_clearance":156,"min_days":27,"max_days":266},
+	{"productcode":"MUJ","device_count":6,"avg_days_to_clearance":207,"min_days":91,"max_days":420},
+	{"productcode":"JAK","device_count":5,"avg_days_to_clearance":170,"min_days":111,"max_days":212},
+	{"productcode":"POK","device_count":5,"avg_days_to_clearance":106,"min_days":25,"max_days":158},
+	{"productcode":"QDQ","device_count":5,"avg_days_to_clearance":200,"min_days":54,"max_days":279},
+	{"productcode":"QJI","device_count":4,"avg_days_to_clearance":130,"min_days":68,"max_days":249},
+	{"productcode":"QNP","device_count":4,"avg_days_to_clearance":29,"min_days":28,"max_days":32},
+	{"productcode":"OLZ","device_count":3,"avg_days_to_clearance":153,"min_days":90,"max_days":254},
+	{"productcode":"QFM","device_count":3,"avg_days_to_clearance":87,"min_days":35,"max_days":126},
+	{"productcode":"QYE","device_count":3,"avg_days_to_clearance":175,"min_days":146,"max_days":199},
+	{"productcode":"OEB","device_count":3,"avg_days_to_clearance":285,"min_days":184,"max_days":443},
+	{"productcode":"SDJ","device_count":2,"avg_days_to_clearance":153,"min_days":150,"max_days":155},
+	{"productcode":"QHA","device_count":2,"avg_days_to_clearance":145,"min_days":119,"max_days":170},
+	{"productcode":"QJU","device_count":2,"avg_days_to_clearance":155,"min_days":110,"max_days":199},
+	{"productcode":"OMB","device_count":2,"avg_days_to_clearance":135,"min_days":126,"max_days":143},
+	{"productcode":"QWO","device_count":2,"avg_days_to_clearance":163,"min_days":130,"max_days":196}
+]

@@ -1,0 +1,10 @@
+# Data files (too large / not needed for viz)
+*.csv
+data.csv
+
+# Marimo cache
+__pycache__/
+.marimo/
+
+# OS files
+.DS_Store
