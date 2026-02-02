@@ -1,84 +1,114 @@
 # FDA SaMD Clearance Time Visualization
 
-Interactive visualization showing average FDA 510(k) clearance times for the top 20 Software as a Medical Device (SaMD) product codes by volume.
+Interactive D3.js visualization analyzing FDA 510(k) clearance times for Software as a Medical Device (SaMD) products.
 
-**[View Live Visualization](https://prahlaadr.github.io/samd-clearance-viz/)**
+**[View Live Visualization →](https://prahlaadr.github.io/samd-clearance-viz/)**
 
-![Lollipop chart showing FDA clearance times by product code](https://img.shields.io/badge/D3.js-Interactive-orange)
+---
 
-## Overview
+## What This Shows
 
-This visualization analyzes FDA 510(k) clearance data for SaMD devices from January 2025 to January 2026, highlighting:
+A horizontal lollipop chart displaying the **top 20 SaMD product codes** by clearance volume, sorted by average days to FDA clearance. The visualization reveals significant variation in clearance times across different device categories:
 
-- **206 total clearances** across 46 unique product codes
-- **Top 20 product codes** ranked by clearance volume
-- **Average clearance time** ranging from 29 to 285 days
+| Insight | Value |
+|---------|-------|
+| **Fastest Category** | QNP (GI Lesion Detection) — 29 days avg |
+| **Slowest Category** | OEB (Medical Image Management) — 285 days avg |
+| **Highest Volume** | QIH (Medical Image Management) — 75 devices |
+| **Overall Average** | 156 days across 206 SaMD clearances |
 
-### Key Findings
+### Interactive Features
 
-| Metric | Value |
-|--------|-------|
-| Fastest Avg Clearance | QNP - 29 days |
-| Slowest Avg Clearance | OEB - 285 days |
-| Most Clearances | QIH - 75 devices |
-| Overall Average | 156 days |
+- **Click any product code** to view all 510(k) submissions for that category on [510k.innolitics.com](https://510k.innolitics.com)
+- **Hover over data points** for detailed metrics (avg days, range, device count)
+- **Top 5 fastest** categories highlighted in orange
+
+---
+
+## Data Source
+
+- **Source:** FDA 510(k) clearance database via [Innolitics 510(k) Database](https://510k.innolitics.com)
+- **Period:** January 2025 – January 2026
+- **Filter:** Software as a Medical Device (SaMD) only
+- **Total:** 206 clearances across 46 unique product codes
+
+---
 
 ## How It Was Built
 
 ### Data Processing
 
-Raw FDA 510(k) clearance data was processed using **DuckDB** and **Polars**:
+Raw FDA data was analyzed using **DuckDB** and validated with **Polars**:
 
-```python
-import polars as pl
-
-# Group by product code, calculate metrics
-top20 = (
-    df.filter(pl.col("days_to_clearance").is_not_null())
-    .group_by("productcode")
-    .agg([
-        pl.count().alias("device_count"),
-        pl.col("days_to_clearance").mean().round(0).alias("avg_days"),
-        pl.col("days_to_clearance").min().alias("min_days"),
-        pl.col("days_to_clearance").max().alias("max_days"),
-    ])
-    .sort("device_count", descending=True)
-    .head(20)
-)
+```sql
+SELECT
+    productcode,
+    COUNT(*) as device_count,
+    ROUND(AVG(days_to_clearance), 0) as avg_days,
+    MIN(days_to_clearance) as min_days,
+    MAX(days_to_clearance) as max_days
+FROM samd_clearances
+WHERE days_to_clearance IS NOT NULL
+GROUP BY productcode
+ORDER BY device_count DESC
+LIMIT 20;
 ```
 
 ### Visualization
 
 Built with **D3.js v7** featuring:
 
-- Horizontal lollipop chart sorted by clearance time
-- Interactive hover tooltips with detailed metrics
-- Top 5 fastest clearances highlighted in orange
-- Innolitics brand colors (#2D3F86, #E85036)
-- Poppins typography
+- Horizontal lollipop chart with custom SVG rendering
+- Clickable Y-axis labels linking to [510k.innolitics.com](https://510k.innolitics.com)
+- Product code descriptions from FDA regulation summaries
+- Interactive tooltips with detailed metrics
+- Innolitics brand colors (#2D3F86 primary, #E85036 highlight)
+- Poppins typography via Google Fonts
 
-### Files
+### Product Code Categories
+
+| Code | Description |
+|------|-------------|
+| QNP | Gastrointestinal Lesion Detection |
+| QFM, QAS | CAD Triage & Notification |
+| POK | CAD for Lesions (Cancer) |
+| QJI | Automated Glycemic Controller |
+| QIH, LLZ, QKB, OEB | Medical Image Management |
+| MYN | Medical Image Analyzer |
+| QDQ | CAD Detection & Diagnosis |
+| MUJ | Radiation Therapy System |
+| JAK | Computed Tomography System |
+| OLZ, OMB | Electroencephalograph |
+| SDJ | Cardiovascular Status Indicator |
+
+---
+
+## Files
 
 | File | Description |
 |------|-------------|
-| `index.html` | D3.js visualization (standalone, no build step) |
-| `clearance_viz.py` | Marimo notebook version with Altair |
+| `index.html` | D3.js visualization (standalone, no build required) |
+| `clearance_viz.py` | Marimo notebook version with Altair charts |
 | `top20_product_codes.json` | Processed data |
 | `analysis_summary.md` | Detailed analysis notes |
 
+---
+
 ## Run Locally
 
-Just open `index.html` in a browser - no server required.
+Just open `index.html` in any browser — no server or build step required.
 
-For the Marimo version:
+For the Marimo notebook version:
 ```bash
 marimo run clearance_viz.py
 ```
 
-## Data Source
+---
 
-FDA 510(k) clearance database, filtered for Software as a Medical Device (SaMD) submissions.
+## Live Demo
+
+**https://prahlaadr.github.io/samd-clearance-viz/**
 
 ---
 
-Built by [Innolitics](https://innolitics.com)
+Built by [Innolitics](https://innolitics.com) — Medical Device Software Experts
