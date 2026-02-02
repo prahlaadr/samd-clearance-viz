@@ -23,7 +23,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
             border-radius: 8px;
@@ -127,18 +127,32 @@
             opacity: 0.6;
         }
 
-        .logo text {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            font-size: 18px;
-            fill: #2D3F86;
-        }
-
         .axis-title {
             font-family: 'Poppins', sans-serif;
             font-size: 14px;
             font-weight: 500;
             fill: #333;
+        }
+
+        .y-axis-label {
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .y-axis-label:hover .product-code {
+            text-decoration: underline;
+        }
+
+        .product-code {
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .product-desc {
+            font-family: 'Poppins', sans-serif;
+            font-size: 10px;
+            fill: #888;
         }
     </style>
 </head>
@@ -146,7 +160,7 @@
     <div class="container">
         <div class="header">
             <h1 class="title">Average FDA Clearance Time: Top 20 Product Codes</h1>
-            <p class="subtitle">SaMD Devices | Jan 2025 - Jan 2026 | Sorted by average clearance time</p>
+            <p class="subtitle">SaMD Devices | Jan 2025 - Jan 2026 | Sorted by average clearance time | Click product code to view 510(k) submissions</p>
         </div>
 
         <div class="chart-container">
@@ -170,6 +184,30 @@
     </div>
 
     <script>
+        // Product code descriptions from FDA regulations
+        const productCodeDescriptions = {
+            "QNP": "Gastrointestinal Lesion Detection",
+            "QFM": "CAD Triage & Notification",
+            "QAS": "CAD Triage & Notification",
+            "POK": "CAD for Lesions (Cancer)",
+            "QJI": "Automated Glycemic Controller",
+            "OMB": "Electroencephalograph",
+            "QHA": "Angiographic X-ray System",
+            "LLZ": "Medical Image Management",
+            "OLZ": "Electroencephalograph",
+            "SDJ": "Cardiovascular Status Indicator",
+            "QJU": "Radiological Guidance System",
+            "QIH": "Medical Image Management",
+            "QKB": "Medical Image Management",
+            "QWO": "Radiological Software",
+            "JAK": "Computed Tomography System",
+            "QYE": "Radiological Software",
+            "QDQ": "CAD Detection & Diagnosis",
+            "MYN": "Medical Image Analyzer",
+            "MUJ": "Radiation Therapy System",
+            "OEB": "Medical Image Management"
+        };
+
         const data = [
             {"productcode":"QIH","device_count":75,"avg_days_to_clearance":156,"min_days":22,"max_days":273},
             {"productcode":"QAS","device_count":14,"avg_days_to_clearance":91,"min_days":18,"max_days":192},
@@ -199,10 +237,10 @@
         // Identify top 5 fastest for highlighting
         const fastestCodes = new Set(sortedData.slice(0, 5).map(d => d.productcode));
 
-        // Chart dimensions
-        const margin = { top: 20, right: 120, bottom: 60, left: 100 };
-        const width = 1000 - margin.left - margin.right;
-        const height = 600 - margin.top - margin.bottom;
+        // Chart dimensions - increased left margin for descriptions
+        const margin = { top: 20, right: 120, bottom: 60, left: 220 };
+        const width = 1100 - margin.left - margin.right;
+        const height = 700 - margin.top - margin.bottom;
 
         // Colors
         const primaryColor = '#2D3F86';
@@ -227,7 +265,7 @@
         const yScale = d3.scaleBand()
             .domain(sortedData.map(d => d.productcode))
             .range([0, height])
-            .padding(0.4);
+            .padding(0.35);
 
         // Grid lines
         svg.append('g')
@@ -260,15 +298,32 @@
             .attr('text-anchor', 'middle')
             .text('Average Days to Clearance');
 
-        // Y Axis
-        svg.append('g')
-            .call(d3.axisLeft(yScale).tickSize(0))
-            .call(g => g.select('.domain').remove())
-            .selectAll('text')
-            .style('font-family', 'Poppins')
-            .style('font-size', '14px')
-            .style('font-weight', d => fastestCodes.has(d) ? '600' : '400')
-            .style('fill', d => fastestCodes.has(d) ? highlightColor : textColor);
+        // Custom Y Axis with clickable labels
+        const yAxisGroup = svg.append('g').attr('class', 'y-axis');
+
+        // Create clickable label groups
+        const labelGroups = yAxisGroup.selectAll('.y-axis-label')
+            .data(sortedData)
+            .join('a')
+            .attr('class', 'y-axis-label')
+            .attr('href', d => `https://510k.innolitics.com/?productcode=${d.productcode}&sort_by=DECISIONDATE&sort_order=desc`)
+            .attr('target', '_blank')
+            .attr('transform', d => `translate(-10, ${yScale(d.productcode) + yScale.bandwidth() / 2})`);
+
+        // Product code text
+        labelGroups.append('text')
+            .attr('class', 'product-code')
+            .attr('text-anchor', 'end')
+            .attr('dy', '-0.2em')
+            .style('fill', d => fastestCodes.has(d.productcode) ? highlightColor : primaryColor)
+            .text(d => d.productcode);
+
+        // Description text (smaller, below)
+        labelGroups.append('text')
+            .attr('class', 'product-desc')
+            .attr('text-anchor', 'end')
+            .attr('dy', '1em')
+            .text(d => `(${productCodeDescriptions[d.productcode] || 'Medical Device'})`);
 
         // Tooltip
         const tooltip = d3.select('#tooltip');
@@ -307,6 +362,7 @@
                     .style('opacity', 1)
                     .html(`
                         <div class="tooltip-title">${d.productcode}</div>
+                        <div style="font-size: 11px; color: #666; margin-bottom: 8px;">${productCodeDescriptions[d.productcode] || ''}</div>
                         <div class="tooltip-row">
                             <span class="tooltip-label">Avg Days:</span>
                             <span class="tooltip-value">${d.avg_days_to_clearance} days</span>
